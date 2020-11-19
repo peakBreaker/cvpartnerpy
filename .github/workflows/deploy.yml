@@ -7,7 +7,7 @@ on: push
 jobs:
   publish:
     env:
-      CVPARTNER_PY_VERSION: 0.0.0-CI
+      CVPARTNER_PY_VERSION: 0.0.1.dev1
     # Name the Job
     name: Publish package
     # Set the type of machine to run on
@@ -30,7 +30,7 @@ jobs:
 
       - name: Write login to file
         run: >-
-          echo ${{ secrets.pypi_login }} > $HOME/.pypirc
+          echo "${{ secrets.PYPI_CVPARTNERPY_REPO_LOGIN }}" > $HOME/.pypirc
       - name: publish to PyPi
         run:
           ./setup.py publish
