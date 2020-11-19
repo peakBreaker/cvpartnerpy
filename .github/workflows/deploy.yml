@@ -14,8 +14,6 @@ jobs:
       # Checkout repo and setup python deps
       - name: Checkout code
         uses: actions/checkout@master
-      - name: Set env
-        run: echo "CVPARTNER_PY_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
@@ -25,14 +23,11 @@ jobs:
           pip install setuptools wheel twine
 
       # Build the package w correct version from tag
-      - name: Extract the github tagname 2
-        run: echo "$GITHUB_REF"
-      - name: Extract the github tagname 3
-        run: echo "$CVPARTNER_PY_VERSION"
+      - name: Set env
+        run: echo "CVPARTNER_PY_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Build package
         run: >-
           ./setup.py sdist bdist_wheel
-
 
       # Publish the package to PyPI
       - name: Write login to file
