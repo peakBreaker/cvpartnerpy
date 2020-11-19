@@ -1,0 +1,10 @@
+sendgrid.env
+__pycache__/
+build/
+cvparterpy.egg-info/
+cvpartnerpy.egg-info/
+dist/
+old/
+tags
+user.ndjson
+users.ndjson
