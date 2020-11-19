@@ -1,0 +1,36 @@
+name: publish package
+
+# Run this workflow every time a new commit pushed to your repository
+on: push
+
+
+jobs:
+  publish:
+    env:
+      CVPARTNER_PY_VERSION: 0.0.0-CI
+    # Name the Job
+    name: Publish package
+    # Set the type of machine to run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install needed deps
+        run: >-
+          pip install setuptools wheel twine
+      - name: Build package
+        run: >-
+          ./setup.py sdist bdist_wheel
+
+      - name: Write login to file
+        run: >-
+          echo ${{ secrets.pypi_login }} > $HOME/.pypirc
+      - name: publish to PyPi
+        run:
+          ./setup.py publish
