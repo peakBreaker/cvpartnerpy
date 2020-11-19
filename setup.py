@@ -102,7 +102,7 @@ class PublishCommand(Command):
 
         # If we ever want to open source the package
         self.status('Uploading the package to PyPI via Twine')
-        os.system('twine upload dist/* --verbose')
+        subprocess.check_call("twine upload dist/* --verbose", shell=True)
 
         self.status('Success! Exiting..')
         sys.exit()
