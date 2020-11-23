@@ -37,7 +37,7 @@ class CVPartner():
             offset += len(users)
             yield from users
             sleep(1)
-            users = _get_user_by_offset(offset)
+            users = self._get_users_by_offset(offset)
 
     def get_user_cv(self, user_id, cv_id):
         log.debug(f'Retreiving user {user_id} CV {cv_id} from API...')
