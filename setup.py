@@ -20,7 +20,7 @@ URL = 'https://github.com/peakBreaker/cvpartnerpy'
 EMAIL = 'andershurum@gmail.com'
 AUTHOR = 'Anders L. Hurum'
 REQUIRES_PYTHON = '>=3.5.0'
-DEFAULT_VERSION = '0.0.0'  # Invalid version
+DEFAULT_VERSION = '0.0.2'  # Invalid version
 
 # What packages are required for this module to be executed?
 with open('requirements.txt', 'r') as f:
@@ -119,7 +119,8 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
+    packages=find_packages(
+        exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
 
@@ -135,11 +136,11 @@ setup(
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.11',
     ],
     entry_points={
     },
-    #scripts=['bin/funny-joke.sh'],
+    # scripts=['bin/funny-joke.sh'],
     # $ setup.py publish support.
     cmdclass={
         'clear': CleanCommand,
