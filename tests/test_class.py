@@ -66,6 +66,9 @@ def test_get_role_from_cv_roles_with_slash():
     assert get_role_from_cv_roles(cv_role) == 'Tech Lead / Utvikler'
 
 
+''
+
+
 def test_get_role_from_cv_roles_empty_string():
     cv_role = {'name': {'no': ''}}
     assert get_role_from_cv_roles(cv_role) == ''

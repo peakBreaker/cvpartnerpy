@@ -61,8 +61,8 @@ class CVPartner():
 
     def list_offices(self, country='no') -> List[Tuple[str, str]]:
         """return id and name of offices, aka departments"""
-        contries = self.list_countries()
-        offices = [n for n in contries if n.get(
+        countries = self.list_countries()
+        offices = [n for n in countries if n.get(
             'code') == country][0].get('offices')
         return [(o.get('_id'), o.get('name')) for o in offices]
 

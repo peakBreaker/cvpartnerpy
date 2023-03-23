@@ -6,6 +6,38 @@ from typing import Optional
 from datetime import date
 
 
+import datetime
+
+
+def get_new_certification(cv,
+                          days_to_look_back: int = 365,
+                          language: str = 'no') -> list:
+    # print(cv.get('navn'))
+    new_certifications: list = []
+    for cert in cv['certifications']:
+        if not cert.get('year'):
+            print(
+                f"{cv.get('navn')} har en uten årstall: {cert.get('name').get(language)}")
+            continue  # skip certification without a year
+
+        # print(f"{cert.get('name').get(language)}")
+        _month = int(cert.get('month')) if cert.get('month') else 1
+        cert_date = datetime.datetime(
+            year=int(cert.get('year')),
+            month=_month,
+            day=1
+        ).astimezone()
+        now = datetime.datetime.now().astimezone()
+        delta_in_days = (now - cert_date).days
+        # print(f"{cert.get('name').get(language)} for {delta} dager siden")
+
+        if delta_in_days < days_to_look_back:
+            # print(f'\t --> New last {days_to_look_back} days')
+            new_certifications.append(cert)
+
+    return new_certifications
+
+
 def get_highest_degree(cv) -> Optional[str]:
     # degree_mapping = {
     #     'phd': 'phd',
