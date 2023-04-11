@@ -1,12 +1,77 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
 import re
 from typing import Optional
 from datetime import date
 
+import logging
+# set up logging to std out
+logger = logging.getLogger(__name__)
 
-import datetime
+
+# grab date parts from project
+# put together a proper python date
+def create_dates_from_project(project) -> tuple[datetime.datetime, datetime.datetime | None, int]:
+    month_from = int(project.get('month_from')
+                     ) if project.get('month_from') else 1
+    month_to = int(project.get('month_to')) if project.get(
+        'month_to') else 1
+    year_from = int(project.get('year_from')) if project.get(
+        'year_from') else 1
+    year_to = int(project.get('year_to')) if project.get('year_to') else 1
+
+    date_from = datetime.datetime(year=year_from, month=month_from, day=1)
+    date_to = datetime.datetime(year=year_to, month=month_to, day=1)
+    # compute time delta in months between from and to
+    delta_months = (date_to.year - date_from.year) * \
+        12 + (date_to.month - date_from.month)
+
+    if date_to == datetime.datetime(year=1, month=1, day=1):
+        # if no end date, assume it's still ongoing
+        date_to = None
+        delta_months = (datetime.datetime.now().year - date_from.year) * \
+            12 + (datetime.datetime.now().month - date_from.month)
+
+    return date_from, date_to, delta_months
+
+
+def sort_projects_newest_to_oldest(cv) -> list[tuple[datetime.datetime, datetime.datetime | None, int, dict]]:
+    projects_to_sort = []
+    for project in cv.get('project_experiences'):
+        date_from, date_to, delta_monts = create_dates_from_project(project)
+
+        projects_to_sort.append((date_from, date_to, delta_monts, project))
+
+    sorted_projects = sorted(
+        projects_to_sort, key=lambda x: x[0], reverse=True)
+    return sorted_projects
+
+
+def get_days_since_last_finished_project(project):
+    date_from, date_to, delta_months, _ = project
+    if date_to is None:
+        # current gig is not ended
+        return 0
+    else:
+        return (datetime.datetime.now() - date_to).days
+
+
+# Dersom feltet «fra-til» har et «til-dato» > 3mnd gammel
+def newest_project_is_older_than_n_months(cv, n_months: int = 3):
+    projects = sort_projects_newest_to_oldest(cv)
+    if not projects:
+        # no project experiences found
+        return False
+
+    date_from, date_to, delta_months, _ = projects[0]
+    if date_to is None:
+        # current gig is not ended
+        return False
+    else:
+        days_in_n_months = n_months * 30
+        return get_days_since_last_finished_project(projects[0]) > days_in_n_months
 
 
 def get_new_certification(cv,
@@ -16,7 +81,7 @@ def get_new_certification(cv,
     new_certifications: list = []
     for cert in cv['certifications']:
         if not cert.get('year'):
-            print(
+            logger.warning(
                 f"{cv.get('navn')} har en uten årstall: {cert.get('name').get(language)}")
             continue  # skip certification without a year
 

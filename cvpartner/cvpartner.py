@@ -39,6 +39,27 @@ class CVPartner():
         r = requests.get(users_url, headers=self.auth_header)
         return r.json()
 
+    def get_department_by_name(self, office_name: str = 'Data Engineering', size=100):
+        # find office ID from name
+        offices = self.list_offices()
+        office_id = [o[0] for o in offices if o[1] == office_name]
+        if not office_id:
+            log.info(f'No office found with name {office_name}!')
+            return []
+        # do a "search" for users in that office
+        BASE_URL = f"https://{self.org}.cvpartner.com/api/v2/users/search?deactivated=false&size={size}&office_ids[]={office_id[0]}"
+        dept_url = BASE_URL.format(org=self.org, office_id=office_id)
+        r = requests.get(dept_url, headers=self.auth_header)
+        return r.json()
+
+    def get_users_and_cvs_from_department(self, office_name: str = 'Data Engineering', size=100) -> list[tuple[dict, dict]]:
+        users = self.get_department_by_name(office_name, size)
+        the_dep = []
+        for user in users:
+            cv = self.get_user_cv(user['user_id'], user['default_cv_id'])
+            the_dep.append((user, cv))
+        return the_dep
+
     def get_users_from_api(self):
         offset = 0
         users = self._get_users_by_offset(offset)
@@ -59,14 +80,13 @@ class CVPartner():
         r = requests.get(url, headers=self.auth_header)
         return r.json()
 
-    def list_offices(self, country='no') -> List[Tuple[str, str]]:
+    def list_offices(self, country: str = 'no') -> List[Tuple[str, str]]:
         """return id and name of offices, aka departments"""
         countries = self.list_countries()
         offices = [n for n in countries if n.get(
             'code') == country][0].get('offices')
         return [(o.get('_id'), o.get('name')) for o in offices]
 
-    # @lru_cache(maxsize=None)
     def get_department(self, office_name: str = 'Data Engineering') -> List[Tuple[dict, dict]]:
         '''Returns a tuple with (user, cv) in a list'''
         the_dep = []
